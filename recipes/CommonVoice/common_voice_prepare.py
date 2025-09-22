@@ -505,12 +505,18 @@ def language_specific_preprocess(language, words):
         )
         words = re.sub("[^" + letters + " ]+", "", words).upper()
     elif language == "ky":
-        # Kyrgyz Cyrillic base alphabet + specific letters (lower and upper case)
-        # Base: а, б, в, г, д, е, ж, з, и, й, к, л, м, н, о, п, р, с, т, у, ф, х, ц, ч, ш, щ, ъ, ы, ь, э, ю, я
-        # Specific: ө, ү, ң, Ө, Ү, Ң
-        # Also allow common punctuation and apostrophe
-        kyrgyz_pattern = r"[^а-яёәіңғүұқөһӘІҢҒҮҰҚӨҪ' ,.?!]"
-        words = re.sub(kyrgyz_pattern, " ", words.lower())
+        # Kyrgyz Cyrillic + common Cyrillic extensions
+        kyrgyz_cyrillic = "а-яёәіңғүұқөһӘІҢҒҮҰҚӨҪ"
+        # Latin (A-Z, a-z), Digits, Accented Latin (À-ÖØ-öø-ÿ)
+        latin_digits = "A-Za-z0-9À-ÖØ-öø-ÿ"
+        # Combining marks (for accents like é, ê, etc.)
+        accents = "́̂̀"  # U+0301 (acute), U+0302 (circumflex), U+0300 (grave)
+        # Allowed punctuation
+        punctuation = "’' ,.?!-"
+
+        pattern = fr"[^{kyrgyz_cyrillic}{latin_digits}{accents}{punctuation}]"
+
+        words = re.sub(pattern, " ", words).lower()
     elif language == "fa":
         HAMZA = "\u0621"
         ALEF_MADDA = "\u0622"
